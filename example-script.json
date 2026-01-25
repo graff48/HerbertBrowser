@@ -1,0 +1,40 @@
+{
+  "name": "Form Fill Example",
+  "metadata": {
+    "author": "Herbert",
+    "description": "Example script demonstrating form filling"
+  },
+  "instructions": [
+    {
+      "instruction": "go to https://httpbin.org/forms/post",
+      "comment": "Navigate to test form"
+    },
+    {
+      "instruction": "wait 2",
+      "comment": "Wait for page load"
+    },
+    {
+      "instruction": "type Test User in custname",
+      "comment": "Fill customer name"
+    },
+    {
+      "instruction": "type 555-0123 in custtel",
+      "comment": "Fill phone number"
+    },
+    {
+      "instruction": "type test@example.com in custemail",
+      "comment": "Fill email"
+    },
+    {
+      "instruction": "select Large in size",
+      "comment": "Select pizza size"
+    },
+    {
+      "instruction": "click bacon"
+    },
+    {
+      "instruction": "submit form",
+      "wait": 2
+    }
+  ]
+}

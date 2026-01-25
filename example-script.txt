@@ -1,0 +1,8 @@
+# Simple text instruction file
+# Each line is an instruction (lines starting with # are comments)
+
+go to https://example.com
+wait 2
+click More information
+scroll down
+back

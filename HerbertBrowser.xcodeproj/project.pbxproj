@@ -1,0 +1,414 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E0000001234567890000001 /* HerbertBrowserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000011 /* HerbertBrowserApp.swift */; };
+		E0000001234567890000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000012 /* ContentView.swift */; };
+		E0000001234567890000003 /* BrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000013 /* BrowserView.swift */; };
+		E0000001234567890000004 /* NavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000014 /* NavigationBar.swift */; };
+		E0000001234567890000005 /* InstructionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000015 /* InstructionBar.swift */; };
+		E0000001234567890000006 /* BrowserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000016 /* BrowserViewModel.swift */; };
+		E0000001234567890000007 /* CommandParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000017 /* CommandParser.swift */; };
+		E0000001234567890000008 /* PageInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000018 /* PageInteractor.swift */; };
+		E0000001234567890000009 /* LLMService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000019 /* LLMService.swift */; };
+		E000000123456789000000A /* BrowserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E000000123456789000001A /* BrowserAction.swift */; };
+		E000000123456789000000B /* PageElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = E000000123456789000001B /* PageElement.swift */; };
+		E000000123456789000000C /* InstructionFileParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E000000123456789000001E /* InstructionFileParser.swift */; };
+		E000000123456789000000D /* ScriptPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E000000123456789000001F /* ScriptPanel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		E0000001234567890000011 /* HerbertBrowserApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HerbertBrowserApp.swift; sourceTree = "<group>"; };
+		E0000001234567890000012 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E0000001234567890000013 /* BrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserView.swift; sourceTree = "<group>"; };
+		E0000001234567890000014 /* NavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBar.swift; sourceTree = "<group>"; };
+		E0000001234567890000015 /* InstructionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionBar.swift; sourceTree = "<group>"; };
+		E0000001234567890000016 /* BrowserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserViewModel.swift; sourceTree = "<group>"; };
+		E0000001234567890000017 /* CommandParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandParser.swift; sourceTree = "<group>"; };
+		E0000001234567890000018 /* PageInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageInteractor.swift; sourceTree = "<group>"; };
+		E0000001234567890000019 /* LLMService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMService.swift; sourceTree = "<group>"; };
+		E000000123456789000001A /* BrowserAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserAction.swift; sourceTree = "<group>"; };
+		E000000123456789000001B /* PageElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageElement.swift; sourceTree = "<group>"; };
+		E000000123456789000001C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E000000123456789000001D /* HerbertBrowser.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HerbertBrowser.entitlements; sourceTree = "<group>"; };
+		E000000123456789000001E /* InstructionFileParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionFileParser.swift; sourceTree = "<group>"; };
+		E000000123456789000001F /* ScriptPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptPanel.swift; sourceTree = "<group>"; };
+		E0000001234567890000020 /* HerbertBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HerbertBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E0000001234567890000030 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E0000001234567890000040 = {
+			isa = PBXGroup;
+			children = (
+				E0000001234567890000041 /* HerbertBrowser */,
+				E0000001234567890000050 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E0000001234567890000041 /* HerbertBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				E0000001234567890000011 /* HerbertBrowserApp.swift */,
+				E0000001234567890000012 /* ContentView.swift */,
+				E0000001234567890000042 /* Views */,
+				E0000001234567890000043 /* ViewModels */,
+				E0000001234567890000044 /* Services */,
+				E0000001234567890000045 /* Models */,
+				E0000001234567890000046 /* Resources */,
+				E000000123456789000001C /* Info.plist */,
+				E000000123456789000001D /* HerbertBrowser.entitlements */,
+			);
+			path = HerbertBrowser;
+			sourceTree = "<group>";
+		};
+		E0000001234567890000042 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E0000001234567890000013 /* BrowserView.swift */,
+				E0000001234567890000014 /* NavigationBar.swift */,
+				E0000001234567890000015 /* InstructionBar.swift */,
+				E000000123456789000001F /* ScriptPanel.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E0000001234567890000043 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				E0000001234567890000016 /* BrowserViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E0000001234567890000044 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				E0000001234567890000017 /* CommandParser.swift */,
+				E0000001234567890000018 /* PageInteractor.swift */,
+				E0000001234567890000019 /* LLMService.swift */,
+				E000000123456789000001E /* InstructionFileParser.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E0000001234567890000045 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E000000123456789000001A /* BrowserAction.swift */,
+				E000000123456789000001B /* PageElement.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E0000001234567890000046 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		E0000001234567890000050 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E0000001234567890000020 /* HerbertBrowser.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E0000001234567890000060 /* HerbertBrowser */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E0000001234567890000070 /* Build configuration list for PBXNativeTarget "HerbertBrowser" */;
+			buildPhases = (
+				E0000001234567890000061 /* Sources */,
+				E0000001234567890000030 /* Frameworks */,
+				E0000001234567890000062 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HerbertBrowser;
+			productName = HerbertBrowser;
+			productReference = E0000001234567890000020 /* HerbertBrowser.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		E0000001234567890000080 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					E0000001234567890000060 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = E0000001234567890000081 /* Build configuration list for PBXProject "HerbertBrowser" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = E0000001234567890000040;
+			productRefGroup = E0000001234567890000050 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E0000001234567890000060 /* HerbertBrowser */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E0000001234567890000062 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E0000001234567890000061 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E0000001234567890000001 /* HerbertBrowserApp.swift in Sources */,
+				E0000001234567890000002 /* ContentView.swift in Sources */,
+				E0000001234567890000003 /* BrowserView.swift in Sources */,
+				E0000001234567890000004 /* NavigationBar.swift in Sources */,
+				E0000001234567890000005 /* InstructionBar.swift in Sources */,
+				E0000001234567890000006 /* BrowserViewModel.swift in Sources */,
+				E0000001234567890000007 /* CommandParser.swift in Sources */,
+				E0000001234567890000008 /* PageInteractor.swift in Sources */,
+				E0000001234567890000009 /* LLMService.swift in Sources */,
+				E000000123456789000000A /* BrowserAction.swift in Sources */,
+				E000000123456789000000B /* PageElement.swift in Sources */,
+				E000000123456789000000C /* InstructionFileParser.swift in Sources */,
+				E000000123456789000000D /* ScriptPanel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E0000001234567890000090 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		E0000001234567890000091 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		E0000001234567890000092 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HerbertBrowser/HerbertBrowser.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HerbertBrowser/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.herbert.browser;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		E0000001234567890000093 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HerbertBrowser/HerbertBrowser.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = HerbertBrowser/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.herbert.browser;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		E0000001234567890000070 /* Build configuration list for PBXNativeTarget "HerbertBrowser" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E0000001234567890000092 /* Debug */,
+				E0000001234567890000093 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E0000001234567890000081 /* Build configuration list for PBXProject "HerbertBrowser" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E0000001234567890000090 /* Debug */,
+				E0000001234567890000091 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = E0000001234567890000080 /* Project object */;
+}
