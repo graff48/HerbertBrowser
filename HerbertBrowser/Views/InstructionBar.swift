@@ -56,6 +56,14 @@ struct InstructionBar: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.instruction.isEmpty || viewModel.isExecuting)
                 .help("Execute Instruction (Return)")
+
+                // Activity panel toggle
+                Button(action: { viewModel.showActivityPanel.toggle() }) {
+                    Image(systemName: viewModel.showActivityPanel ? "brain.head.profile.fill" : "brain.head.profile")
+                        .font(.system(size: 12))
+                }
+                .buttonStyle(.bordered)
+                .help(viewModel.showActivityPanel ? "Hide Activity Panel" : "Show Activity Panel")
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)

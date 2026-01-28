@@ -29,6 +29,10 @@ class BrowserViewModel: ObservableObject {
     @Published var scriptInstructions: [InstructionFileParser.Instruction] = []
     @Published var showScriptPanel: Bool = false
 
+    // Activity panel state
+    @Published var activities: [AgentActivity] = []
+    @Published var showActivityPanel: Bool = false
+
     // MARK: - Services
 
     private let commandParser = CommandParser()
@@ -150,19 +154,26 @@ class BrowserViewModel: ObservableObject {
     }
 
     private func executeLLMInstruction(_ instruction: String) async {
+        // Auto-show activity panel when agent starts working
+        showActivityPanel = true
+
         statusMessage = "Capturing screenshot..."
+        logActivity(phase: .capturing, message: "Capturing screenshot of current page")
 
         do {
             // Capture screenshot for vision analysis
             let screenshot = try? await pageInteractor.captureScreenshotBase64()
 
             statusMessage = "Analyzing page with Claude Vision..."
+            logActivity(phase: .analyzing, message: "Analyzing page with Claude Vision")
 
             // Get page context
             let pageContext = try? await pageInteractor.analyzePage()
 
+            logActivity(phase: .thinking, message: "Interpreting: \(instruction)")
+
             // Get actions from LLM with screenshot
-            let actions = try await llmService.parseInstruction(
+            let (actions, reasoning) = try await llmService.parseInstructionWithReasoning(
                 instruction,
                 pageContext: pageContext,
                 screenshot: screenshot
@@ -170,38 +181,65 @@ class BrowserViewModel: ObservableObject {
 
             if actions.isEmpty {
                 statusMessage = "Could not determine actions for instruction"
+                logActivity(phase: .error, message: "Could not determine actions for instruction")
                 isExecuting = false
                 return
             }
 
+            // Log planning phase with reasoning if available
+            let planMessage = "Planned \(actions.count) action(s)"
+            logActivity(phase: .planning, message: planMessage, details: reasoning)
+
             // Execute each action
             for (index, action) in actions.enumerated() {
-                statusMessage = "Executing step \(index + 1)/\(actions.count): \(action.description)"
+                let stepMessage = "Step \(index + 1)/\(actions.count): \(action.description)"
+                statusMessage = "Executing \(stepMessage)"
+                logActivity(phase: .executing, message: stepMessage)
 
                 let result = try await pageInteractor.execute(action)
 
                 if !result.success {
                     statusMessage = "Failed at step \(index + 1): \(result.message)"
+                    logActivity(phase: .error, message: "Failed: \(result.message)")
                     isExecuting = false
                     return
                 }
 
+                logActivity(phase: .success, message: "Completed: \(action.description)")
+
                 // Small delay between actions
                 if index < actions.count - 1 {
+                    logActivity(phase: .waiting, message: "Waiting 0.5s before next action")
                     try await Task.sleep(nanoseconds: 500_000_000)
                 }
             }
 
             statusMessage = "Completed \(actions.count) action(s)"
+            logActivity(phase: .success, message: "All \(actions.count) action(s) completed successfully")
             self.instruction = ""
 
         } catch let error as LLMError {
             statusMessage = error.localizedDescription
+            logActivity(phase: .error, message: error.localizedDescription)
         } catch {
             statusMessage = "Error: \(error.localizedDescription)"
+            logActivity(phase: .error, message: "Error: \(error.localizedDescription)")
         }
 
         isExecuting = false
+    }
+
+    // MARK: - Activity Logging
+
+    /// Log an activity to the activity panel
+    func logActivity(phase: ActivityPhase, message: String, details: String? = nil) {
+        let activity = AgentActivity(phase: phase, message: message, details: details)
+        activities.append(activity)
+    }
+
+    /// Clear all activities
+    func clearActivities() {
+        activities.removeAll()
     }
 
     // MARK: - Settings
@@ -253,6 +291,10 @@ class BrowserViewModel: ObservableObject {
         isRunningScript = true
         isPaused = false
         scriptProgress = (0, scriptInstructions.count)
+
+        // Auto-show activity panel when script starts
+        showActivityPanel = true
+        logActivity(phase: .planning, message: "Starting script '\(currentScriptName)' with \(scriptInstructions.count) instruction(s)")
 
         scriptTask = Task {
             await executeScript()
@@ -353,29 +395,53 @@ class BrowserViewModel: ObservableObject {
             if case .unknown(let unknownInstruction) = action {
                 if llmService.isConfigured {
                     // Try LLM with screenshot
+                    logActivity(phase: .capturing, message: "Capturing screenshot for: \(instructionText)")
                     let screenshot = try? await pageInteractor.captureScreenshotBase64()
+
+                    logActivity(phase: .analyzing, message: "Analyzing page with Claude Vision")
                     let pageContext = try? await pageInteractor.analyzePage()
-                    let actions = try await llmService.parseInstruction(
+
+                    logActivity(phase: .thinking, message: "Interpreting instruction")
+                    let (actions, reasoning) = try await llmService.parseInstructionWithReasoning(
                         instructionText,
                         pageContext: pageContext,
                         screenshot: screenshot
                     )
 
-                    for action in actions {
+                    logActivity(phase: .planning, message: "Planned \(actions.count) action(s)", details: reasoning)
+
+                    for (index, action) in actions.enumerated() {
+                        logActivity(phase: .executing, message: "Step \(index + 1)/\(actions.count): \(action.description)")
                         let result = try await pageInteractor.execute(action)
                         if !result.success {
+                            logActivity(phase: .error, message: "Failed: \(result.message)")
                             return (false, result.message)
+                        }
+                        logActivity(phase: .success, message: "Completed: \(action.description)")
+
+                        // Small delay between actions
+                        if index < actions.count - 1 {
+                            logActivity(phase: .waiting, message: "Waiting 0.5s before next action")
+                            try? await Task.sleep(nanoseconds: 500_000_000)
                         }
                     }
                     return (true, nil)
                 } else {
+                    logActivity(phase: .error, message: "Unknown command (no API key): \(unknownInstruction)")
                     return (false, "Unknown command (no API key): \(unknownInstruction)")
                 }
             } else {
+                logActivity(phase: .executing, message: action.description)
                 let result = try await pageInteractor.execute(action)
+                if result.success {
+                    logActivity(phase: .success, message: "Completed: \(action.description)")
+                } else {
+                    logActivity(phase: .error, message: "Failed: \(result.message)")
+                }
                 return (result.success, result.success ? nil : result.message)
             }
         } catch {
+            logActivity(phase: .error, message: "Error: \(error.localizedDescription)")
             return (false, error.localizedDescription)
         }
     }

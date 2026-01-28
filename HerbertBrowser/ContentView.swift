@@ -23,6 +23,12 @@ struct ContentView: View {
                 InstructionBar()
             }
 
+            // Activity panel (between main content and script panel)
+            if viewModel.showActivityPanel {
+                Divider()
+                ActivityPanel()
+            }
+
             // Script panel (sidebar)
             if viewModel.showScriptPanel {
                 Divider()
