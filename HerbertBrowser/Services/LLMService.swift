@@ -1,6 +1,6 @@
 import Foundation
 
-/// Service for Claude API integration
+/// Service for Claude API integration with vision support
 class LLMService {
     private var apiKey: String?
     private let baseURL = "https://api.anthropic.com/v1/messages"
@@ -17,74 +17,30 @@ class LLMService {
         apiKey != nil && !apiKey!.isEmpty
     }
 
-    /// Parse a complex instruction into browser actions using Claude
-    func parseInstruction(_ instruction: String, pageContext: PageAnalysis?) async throws -> [BrowserAction] {
+    /// Parse a complex instruction into browser actions using Claude with optional screenshot
+    func parseInstruction(
+        _ instruction: String,
+        pageContext: PageAnalysis?,
+        screenshot: String? = nil
+    ) async throws -> [BrowserAction] {
         guard let apiKey = apiKey, !apiKey.isEmpty else {
             throw LLMError.notConfigured
         }
 
-        let prompt = buildPrompt(instruction: instruction, pageContext: pageContext)
-        let response = try await sendRequest(prompt: prompt)
+        let response = try await sendRequest(
+            instruction: instruction,
+            pageContext: pageContext,
+            screenshotBase64: screenshot
+        )
         return parseResponse(response)
     }
 
-    /// Build the prompt for Claude
-    private func buildPrompt(instruction: String, pageContext: PageAnalysis?) -> String {
-        var prompt = """
-            You are a browser automation assistant. Given a user instruction and the current page context,
-            return a JSON array of actions to perform. Each action should be one of:
-
-            - {"action": "navigate", "url": "https://..."}
-            - {"action": "click", "target": "button text or selector"}
-            - {"action": "type", "text": "text to type", "target": "field identifier"}
-            - {"action": "scroll", "direction": "up|down|top|bottom"}
-            - {"action": "select", "option": "option text", "target": "dropdown identifier"}
-            - {"action": "submit"}
-            - {"action": "back"}
-            - {"action": "forward"}
-            - {"action": "wait", "seconds": 1}
-
-            For targets, prefer using visible text content. If that's ambiguous, use CSS selectors.
-
-            User instruction: \(instruction)
-
-            """
-
-        if let context = pageContext {
-            prompt += """
-
-                Current page: \(context.title) (\(context.url))
-
-                Interactive elements on page:
-                """
-
-            for element in context.interactiveElements.prefix(50) {
-                let text = element.displayText
-                if !text.isEmpty && text.count < 100 {
-                    prompt += "\n- \(element.tagName): \"\(text)\" (\(element.selector))"
-                }
-            }
-
-            if !context.forms.isEmpty {
-                prompt += "\n\nForms on page:"
-                for form in context.forms {
-                    prompt += "\n- Form: \(form.name ?? "unnamed") with \(form.fieldCount) fields"
-                }
-            }
-        }
-
-        prompt += """
-
-
-            Return ONLY a valid JSON array of actions, no explanation. Example:
-            [{"action": "click", "target": "Login"}]
-            """
-
-        return prompt
-    }
-
-    /// Send request to Claude API
-    private func sendRequest(prompt: String) async throws -> String {
+    /// Send request to Claude API with optional vision
+    private func sendRequest(
+        instruction: String,
+        pageContext: PageAnalysis?,
+        screenshotBase64: String?
+    ) async throws -> String {
         guard let apiKey = apiKey else {
             throw LLMError.notConfigured
         }
@@ -99,11 +55,33 @@ class LLMService {
         request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
         request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
 
+        // Build the content array
+        var contentArray: [[String: Any]] = []
+
+        // Add screenshot if available
+        if let screenshot = screenshotBase64 {
+            contentArray.append([
+                "type": "image",
+                "source": [
+                    "type": "base64",
+                    "media_type": "image/jpeg",
+                    "data": screenshot
+                ]
+            ])
+        }
+
+        // Build the text prompt
+        let textPrompt = buildPrompt(instruction: instruction, pageContext: pageContext, hasScreenshot: screenshotBase64 != nil)
+        contentArray.append([
+            "type": "text",
+            "text": textPrompt
+        ])
+
         let body: [String: Any] = [
             "model": "claude-sonnet-4-20250514",
-            "max_tokens": 1024,
+            "max_tokens": 2048,
             "messages": [
-                ["role": "user", "content": prompt]
+                ["role": "user", "content": contentArray]
             ]
         ]
 
@@ -132,6 +110,91 @@ class LLMService {
         return text
     }
 
+    /// Build the prompt for Claude
+    private func buildPrompt(instruction: String, pageContext: PageAnalysis?, hasScreenshot: Bool) -> String {
+        var prompt = """
+            You are a browser automation assistant. Given a user instruction\(hasScreenshot ? " and a screenshot of the current page" : ""),
+            return a JSON array of actions to perform.
+
+            IMPORTANT: Look at the screenshot carefully to identify:
+            - Form fields and their labels (the label text is usually near the input field)
+            - Buttons and links (identify them by their visible text)
+            - Checkboxes and radio buttons (note the text next to them)
+            - Dropdown menus (identify by the currently selected option or label)
+
+            Each action should be one of:
+            - {"action": "navigate", "url": "https://..."}
+            - {"action": "click", "target": "exact visible text or description"}
+            - {"action": "type", "text": "text to type", "target": "field label or placeholder text"}
+            - {"action": "scroll", "direction": "up|down|top|bottom"}
+            - {"action": "select", "option": "option text", "target": "dropdown label"}
+            - {"action": "submit"}
+            - {"action": "back"}
+            - {"action": "forward"}
+            - {"action": "wait", "seconds": 1}
+
+            For targets, use the EXACT visible text you see in the screenshot. For form fields:
+            - Use the label text that appears next to or above the field
+            - For placeholder text, use what's shown inside the field
+            - For buttons, use the exact button text
+
+            User instruction: \(instruction)
+
+            """
+
+        if let context = pageContext {
+            prompt += """
+
+                Page info: \(context.title) (\(context.url))
+
+                """
+
+            // Add form information
+            if !context.forms.isEmpty {
+                prompt += "Forms detected: \(context.forms.count)\n"
+            }
+
+            // Add some element context (but rely primarily on screenshot)
+            let inputs = context.elements.filter {
+                $0.isVisible && ($0.tagName == "input" || $0.tagName == "textarea" || $0.tagName == "select")
+            }
+            if !inputs.isEmpty {
+                prompt += "\nForm fields found:\n"
+                for input in inputs.prefix(20) {
+                    var desc = "- \(input.tagName)"
+                    if let name = input.name, !name.isEmpty {
+                        desc += " name=\"\(name)\""
+                    }
+                    if let placeholder = input.placeholder, !placeholder.isEmpty {
+                        desc += " placeholder=\"\(placeholder)\""
+                    }
+                    if let type = input.type {
+                        desc += " type=\"\(type)\""
+                    }
+                    prompt += desc + "\n"
+                }
+            }
+        }
+
+        if hasScreenshot {
+            prompt += """
+
+                IMPORTANT: Use the screenshot to identify the exact text labels for form fields.
+                Match the user's instruction to what you can SEE in the screenshot.
+                If the user says "Customer name", look for a field labeled "Customer name" or similar in the screenshot.
+
+                """
+        }
+
+        prompt += """
+
+            Return ONLY a valid JSON array of actions, no explanation or markdown. Example:
+            [{"action": "type", "text": "John", "target": "Customer name"}]
+            """
+
+        return prompt
+    }
+
     /// Parse Claude's response into browser actions
     private func parseResponse(_ response: String) -> [BrowserAction] {
         // Extract JSON from response (it might have markdown formatting)
@@ -150,7 +213,7 @@ class LLMService {
 
         guard let data = jsonString.data(using: .utf8),
               let actions = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
-            return [.unknown(instruction: "Failed to parse LLM response")]
+            return [.unknown(instruction: "Failed to parse LLM response: \(jsonString.prefix(100))")]
         }
 
         return actions.compactMap { parseAction($0) }
@@ -194,7 +257,7 @@ class LLMService {
             return .forward
 
         case "wait":
-            guard let seconds = dict["seconds"] as? Double else { return nil }
+            let seconds = (dict["seconds"] as? Double) ?? (dict["seconds"] as? Int).map { Double($0) } ?? 1.0
             return .wait(seconds: seconds)
 
         default:
@@ -203,10 +266,12 @@ class LLMService {
     }
 
     private func targetFromString(_ target: String) -> ElementTarget {
-        if target.hasPrefix("#") || target.hasPrefix(".") || target.contains("[") {
+        // Check if it looks like a CSS selector
+        if target.hasPrefix("#") || target.hasPrefix(".") || target.contains("[") || target.contains(">") {
             return .selector(target)
         }
-        return .text(target)
+        // Use as label/text target
+        return .label(target)
     }
 }
 

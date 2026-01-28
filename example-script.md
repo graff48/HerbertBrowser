@@ -19,15 +19,18 @@ This is a sample instruction file for HerbertBrowser.
 > Navigate to another page
 - go to https://httpbin.org/forms/post
 
+> Wait for form to load
+- wait 2
+
 > Fill out the form
-- type John in Customer name
-- type 555-1234 in Telephone
-- type john@example.com in E-mail address
+- type John in custname
+- type 555-1234 in custtel
+- type john@example.com in custemail
 
-> Select a Pizza Size
-- select Medium in size
+> Select a pizza size (radio button)
+- click Medium
 
-> Select Pizza Toppings
+> Select toppings
 - click bacon
 - click cheese
 
