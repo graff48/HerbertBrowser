@@ -150,14 +150,23 @@ class BrowserViewModel: ObservableObject {
     }
 
     private func executeLLMInstruction(_ instruction: String) async {
-        statusMessage = "Analyzing with Claude..."
+        statusMessage = "Capturing screenshot..."
 
         do {
+            // Capture screenshot for vision analysis
+            let screenshot = try? await pageInteractor.captureScreenshotBase64()
+
+            statusMessage = "Analyzing page with Claude Vision..."
+
             // Get page context
             let pageContext = try? await pageInteractor.analyzePage()
 
-            // Get actions from LLM
-            let actions = try await llmService.parseInstruction(instruction, pageContext: pageContext)
+            // Get actions from LLM with screenshot
+            let actions = try await llmService.parseInstruction(
+                instruction,
+                pageContext: pageContext,
+                screenshot: screenshot
+            )
 
             if actions.isEmpty {
                 statusMessage = "Could not determine actions for instruction"
@@ -312,12 +321,12 @@ class BrowserViewModel: ObservableObject {
             }
 
             // Execute the instruction
-            let success = await executeSingleInstruction(instruction.text)
+            let (success, errorMessage) = await executeSingleInstruction(instruction.text)
 
             if !success {
                 // Pause on error
                 isPaused = true
-                statusMessage = "Error at step \(index + 1). Script paused."
+                statusMessage = "Error at step \(index + 1): \(errorMessage ?? "Unknown error"). Script paused."
                 return
             }
 
@@ -336,33 +345,38 @@ class BrowserViewModel: ObservableObject {
         statusMessage = "Script '\(currentScriptName)' completed successfully"
     }
 
-    /// Execute a single instruction and return success status
-    private func executeSingleInstruction(_ instructionText: String) async -> Bool {
+    /// Execute a single instruction and return success status with optional error message
+    private func executeSingleInstruction(_ instructionText: String) async -> (success: Bool, error: String?) {
         do {
             let action = commandParser.parse(instructionText)
 
-            if case .unknown = action {
+            if case .unknown(let unknownInstruction) = action {
                 if llmService.isConfigured {
-                    // Try LLM
+                    // Try LLM with screenshot
+                    let screenshot = try? await pageInteractor.captureScreenshotBase64()
                     let pageContext = try? await pageInteractor.analyzePage()
-                    let actions = try await llmService.parseInstruction(instructionText, pageContext: pageContext)
+                    let actions = try await llmService.parseInstruction(
+                        instructionText,
+                        pageContext: pageContext,
+                        screenshot: screenshot
+                    )
 
                     for action in actions {
                         let result = try await pageInteractor.execute(action)
                         if !result.success {
-                            return false
+                            return (false, result.message)
                         }
                     }
-                    return true
+                    return (true, nil)
                 } else {
-                    return false
+                    return (false, "Unknown command (no API key): \(unknownInstruction)")
                 }
             } else {
                 let result = try await pageInteractor.execute(action)
-                return result.success
+                return (result.success, result.success ? nil : result.message)
             }
         } catch {
-            return false
+            return (false, error.localizedDescription)
         }
     }
 

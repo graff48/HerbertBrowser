@@ -1,5 +1,6 @@
 import Foundation
 import WebKit
+import AppKit
 
 /// Handles JavaScript injection and DOM interaction
 class PageInteractor {
@@ -11,6 +12,38 @@ class PageInteractor {
 
     func setWebView(_ webView: WKWebView) {
         self.webView = webView
+    }
+
+    // MARK: - Screenshot Capture
+
+    /// Capture a screenshot of the current web view
+    @MainActor
+    func captureScreenshot() async throws -> Data {
+        guard let webView = webView else {
+            throw InteractorError.noWebView
+        }
+
+        let configuration = WKSnapshotConfiguration()
+        // Capture the visible portion of the web view
+        configuration.rect = webView.bounds
+
+        let image = try await webView.takeSnapshot(configuration: configuration)
+
+        // Convert NSImage to JPEG data (smaller than PNG, good for API)
+        guard let tiffData = image.tiffRepresentation,
+              let bitmapRep = NSBitmapImageRep(data: tiffData),
+              let jpegData = bitmapRep.representation(using: .jpeg, properties: [.compressionFactor: 0.8]) else {
+            throw InteractorError.screenshotFailed
+        }
+
+        return jpegData
+    }
+
+    /// Capture screenshot and return as base64 string
+    @MainActor
+    func captureScreenshotBase64() async throws -> String {
+        let imageData = try await captureScreenshot()
+        return imageData.base64EncodedString()
     }
 
     // MARK: - Page Analysis
@@ -259,12 +292,25 @@ class PageInteractor {
             return """
                 (function() {
                     const text = '\(escaped)'.toLowerCase();
-                    // Try exact text match first
+
+                    // Try input/textarea/select by name attribute first (for form fields)
+                    let byName = document.querySelector(`input[name="${text}" i], textarea[name="${text}" i], select[name="${text}" i]`);
+                    if (byName) return byName;
+
+                    // Try partial name match
+                    byName = document.querySelector(`input[name*="${text}" i], textarea[name*="${text}" i], select[name*="${text}" i]`);
+                    if (byName) return byName;
+
+                    // Try by id
+                    let byId = document.getElementById(text) || document.querySelector(`[id*="${text}" i]`);
+                    if (byId) return byId;
+
+                    // Try exact text match
                     const xpath = `//*[normalize-space(text())='${text}' or normalize-space()='${text}']`;
                     let result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                     if (result) return result;
 
-                    // Try contains text
+                    // Try contains text on interactive elements
                     const elements = document.querySelectorAll('a, button, input[type="submit"], [role="button"], [onclick]');
                     for (const el of elements) {
                         const elText = (el.textContent || el.value || el.getAttribute('aria-label') || '').toLowerCase();
@@ -350,6 +396,7 @@ enum InteractorError: LocalizedError {
     case invalidResponse
     case elementNotFound(String)
     case executionFailed(String)
+    case screenshotFailed
 
     var errorDescription: String? {
         switch self {
@@ -361,6 +408,8 @@ enum InteractorError: LocalizedError {
             return "Element not found: \(target)"
         case .executionFailed(let reason):
             return "Execution failed: \(reason)"
+        case .screenshotFailed:
+            return "Failed to capture screenshot"
         }
     }
 }
