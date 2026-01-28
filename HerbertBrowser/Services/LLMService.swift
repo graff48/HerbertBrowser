@@ -23,6 +23,16 @@ class LLMService {
         pageContext: PageAnalysis?,
         screenshot: String? = nil
     ) async throws -> [BrowserAction] {
+        let (actions, _) = try await parseInstructionWithReasoning(instruction, pageContext: pageContext, screenshot: screenshot)
+        return actions
+    }
+
+    /// Parse instruction and return both actions and optional reasoning
+    func parseInstructionWithReasoning(
+        _ instruction: String,
+        pageContext: PageAnalysis?,
+        screenshot: String? = nil
+    ) async throws -> (actions: [BrowserAction], reasoning: String?) {
         guard let apiKey = apiKey, !apiKey.isEmpty else {
             throw LLMError.notConfigured
         }
@@ -32,7 +42,7 @@ class LLMService {
             pageContext: pageContext,
             screenshotBase64: screenshot
         )
-        return parseResponse(response)
+        return parseResponseWithReasoning(response)
     }
 
     /// Send request to Claude API with optional vision
@@ -188,7 +198,10 @@ class LLMService {
 
         prompt += """
 
-            Return ONLY a valid JSON array of actions, no explanation or markdown. Example:
+            Return a JSON object with "reasoning" and "actions" fields. Example:
+            {"reasoning": "The user wants to fill in the customer name field, which I can see labeled 'Customer name' in the form.", "actions": [{"action": "type", "text": "John", "target": "Customer name"}]}
+
+            If you cannot provide reasoning, you may also return just a JSON array of actions:
             [{"action": "type", "text": "John", "target": "Customer name"}]
             """
 
@@ -197,6 +210,12 @@ class LLMService {
 
     /// Parse Claude's response into browser actions
     private func parseResponse(_ response: String) -> [BrowserAction] {
+        let (actions, _) = parseResponseWithReasoning(response)
+        return actions
+    }
+
+    /// Parse Claude's response into browser actions and optional reasoning
+    private func parseResponseWithReasoning(_ response: String) -> (actions: [BrowserAction], reasoning: String?) {
         // Extract JSON from response (it might have markdown formatting)
         var jsonString = response.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -211,12 +230,27 @@ class LLMService {
             jsonString = jsonString.trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
-        guard let data = jsonString.data(using: .utf8),
-              let actions = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
-            return [.unknown(instruction: "Failed to parse LLM response: \(jsonString.prefix(100))")]
+        guard let data = jsonString.data(using: .utf8) else {
+            return ([.unknown(instruction: "Failed to parse LLM response: \(jsonString.prefix(100))")], nil)
         }
 
-        return actions.compactMap { parseAction($0) }
+        // Try to parse as structured response with reasoning
+        if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            let reasoning = json["reasoning"] as? String
+
+            // Check for actions array in the object
+            if let actionsArray = json["actions"] as? [[String: Any]] {
+                let actions = actionsArray.compactMap { parseAction($0) }
+                return (actions, reasoning)
+            }
+        }
+
+        // Fallback: try to parse as plain array (backward compatibility)
+        if let actions = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
+            return (actions.compactMap { parseAction($0) }, nil)
+        }
+
+        return ([.unknown(instruction: "Failed to parse LLM response: \(jsonString.prefix(100))")], nil)
     }
 
     private func parseAction(_ dict: [String: Any]) -> BrowserAction? {

@@ -20,6 +20,8 @@
 		E000000123456789000000B /* PageElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = E000000123456789000001B /* PageElement.swift */; };
 		E000000123456789000000C /* InstructionFileParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E000000123456789000001E /* InstructionFileParser.swift */; };
 		E000000123456789000000D /* ScriptPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E000000123456789000001F /* ScriptPanel.swift */; };
+		E000000123456789000000E /* AgentActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000021 /* AgentActivity.swift */; };
+		E000000123456789000000F /* ActivityPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0000001234567890000022 /* ActivityPanel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,8 @@
 		E000000123456789000001E /* InstructionFileParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionFileParser.swift; sourceTree = "<group>"; };
 		E000000123456789000001F /* ScriptPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptPanel.swift; sourceTree = "<group>"; };
 		E0000001234567890000020 /* HerbertBrowser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HerbertBrowser.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0000001234567890000021 /* AgentActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentActivity.swift; sourceTree = "<group>"; };
+		E0000001234567890000022 /* ActivityPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityPanel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +87,7 @@
 				E0000001234567890000014 /* NavigationBar.swift */,
 				E0000001234567890000015 /* InstructionBar.swift */,
 				E000000123456789000001F /* ScriptPanel.swift */,
+				E0000001234567890000022 /* ActivityPanel.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -111,6 +116,7 @@
 			children = (
 				E000000123456789000001A /* BrowserAction.swift */,
 				E000000123456789000001B /* PageElement.swift */,
+				E0000001234567890000021 /* AgentActivity.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -211,6 +217,8 @@
 				E000000123456789000000B /* PageElement.swift in Sources */,
 				E000000123456789000000C /* InstructionFileParser.swift in Sources */,
 				E000000123456789000000D /* ScriptPanel.swift in Sources */,
+				E000000123456789000000E /* AgentActivity.swift in Sources */,
+				E000000123456789000000F /* ActivityPanel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
